@@ -21,12 +21,18 @@ class ShortenerController extends Controller
             'url' => 'required|url|min:4|max:240'
         ]);
 
-        $result = LaravelSafeBrowsing::isSafeUrl($request->post('url'), true);
-        if($result !== true) {
+        try {
+            $result = LaravelSafeBrowsing::isSafeUrl($request->post('url'), true);
+            $result = is_string($result) ? 'The given url is '.Str::lower($result) : $result;
+        } catch (\Exception $exception) {
+            $result = $exception->getMessage();
+        }
+
+        if(!is_bool($result)) {
             return response()->json([
                 'message' => 'The given data was invalid',
                 'errors' => [
-                    'url' => ['The given url is '.Str::lower($result)]
+                    'url' => [$result]
                 ]
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -40,7 +46,7 @@ class ShortenerController extends Controller
             ]);
         }
         return response()->json([
-            'message' => 'Shortener url hash been created',
+            'message' => 'Shortener url has been created',
             'short_url' => route('short_url', ['hash' => $data->hash]),
             'original_url' => $url
         ]);
