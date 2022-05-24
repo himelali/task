@@ -28,7 +28,7 @@ class ShortenerController extends Controller
             $result = $exception->getMessage();
         }
 
-        if(!is_bool($result)) {
+        if(!is_bool($result) || $result !== true) {
             return response()->json([
                 'message' => 'The given data was invalid',
                 'errors' => [

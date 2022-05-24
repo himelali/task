@@ -52,9 +52,7 @@ class UrlBank extends Model
         $item = static::select('id','url','traffic','expired_at')
             ->whereHash($hash)
             ->firstOrFail();
-        $item->update([
-            'traffic' => ($item->traffic+1)
-        ]);
+        $item->update(['traffic'=>($item->traffic+1)]);
         return $item;
     }
 }
